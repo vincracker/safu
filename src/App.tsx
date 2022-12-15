@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 
 import { Layout } from "antd";
 
-import background from "./assets/images/background.jpg";
+// import background from "./assets/images/background.jpg";
 import web3Boilerplate_logo from "./assets/images/web3Boilerplate_logo.png";
 import ConnectAccount from "./components/Account/ConnectAccount";
 import ChainSelector from "./components/ChainSelector";
@@ -14,10 +14,11 @@ const { Header, Footer } = Layout;
 
 const styles = {
   layout: {
-    backgroundImage: `url(${background})`,
-    backgroundPosition: "center",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
+    // backgroundImage: `url(${background})`,
+    // backgroundPosition: "center",
+    // backgroundSize: "cover",
+    // backgroundRepeat: "no-repeat",
+    backgroundImage: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
     width: "100vw",
     height: "100vh",
     overflow: "auto",
@@ -66,7 +67,8 @@ function App() {
   return (
     <Layout style={styles.layout}>
       <Header style={{ ...styles.header, justifyContent: "space-between" }}>
-        <Logo />
+        {/* <Logo /> */}
+        <div></div>
         <div style={styles.headerRight}>
           <ChainSelector />
           <ConnectAccount />
@@ -77,13 +79,7 @@ function App() {
       </div>
 
       <Footer style={styles.footer}>
-        <div style={{ display: "block" }}>
-          Please leave a ⭐️ on this{" "}
-          <a href="https://github.com/Pedrojok01/Web3-Boilerplate" target="_blank" rel="noopener noreferrer">
-            boilerplate
-          </a>
-          , if you like it!
-        </div>
+        <div style={{ display: "block" }}>Footer</div>
       </Footer>
     </Layout>
   );

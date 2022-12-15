@@ -93,6 +93,7 @@ const AddressInput: React.FC<AddressInputProps> = (props) => {
 
   return (
     <Input
+      size="large"
       ref={input}
       placeholder={props.placeholder ? props.placeholder : "Public address"}
       prefix={

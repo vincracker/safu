@@ -1,5 +1,6 @@
 import React from "react";
 
+import { ChakraProvider } from "@chakra-ui/react";
 import { Web3ReactProvider } from "@web3-react/core";
 import { createRoot } from "react-dom/client";
 
@@ -11,7 +12,9 @@ const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <Web3ReactProvider connectors={connectors}>
-      <App />
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
     </Web3ReactProvider>
   </React.StrictMode>
 );

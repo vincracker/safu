@@ -7,8 +7,8 @@
 }
 
 .ant-btn-primary {
-background-color: black !important;
-border: none !important;
+  background: linear-gradient(to right, #8e2de2, #4a00e0);
+  border: none !important;
 }
 
 .ant-btn:hover {
@@ -37,4 +37,17 @@ border: none !important;
   width: 70vw;
   justify-content: center;
   align-items: center;
+}
+.ant-input {
+  background: #24243e;
+  color: aliceblue;
+}
+.ant-input-affix-wrapper input::placeholder {
+  color: rgba(255, 255, 255, 0.519);
+}
+.ant-input-number-input {
+  color: rgb(255, 255, 255);
+}
+.ant-input-number {
+  color: rgb(255, 255, 255);
 }
