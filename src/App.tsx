@@ -1,14 +1,14 @@
 import { Buffer } from "buffer";
 
-import { Layout } from "antd";
+import { Button, Layout } from "antd";
 
 // import background from "./assets/images/background.jpg";
-import web3Boilerplate_logo from "./assets/images/web3Boilerplate_logo.png";
+// import web3Boilerplate_logo from "./assets/images/web3Boilerplate_logo.png";
 import ConnectAccount from "./components/Account/ConnectAccount";
 import ChainSelector from "./components/ChainSelector";
 import DisplayPane from "./components/displayPane/DisplayPane";
 import "./App.css";
-import { useWindowWidthAndHeight } from "./hooks/useWindowWidthAndHeight";
+// import { useWindowWidthAndHeight } from "./hooks/useWindowWidthAndHeight";
 
 const { Header, Footer } = Layout;
 
@@ -18,7 +18,7 @@ const styles = {
     // backgroundPosition: "center",
     // backgroundSize: "cover",
     // backgroundRepeat: "no-repeat",
-    backgroundImage: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
+    backgroundImage: "white",
     width: "100vw",
     height: "100vh",
     overflow: "auto",
@@ -29,6 +29,7 @@ const styles = {
     zIndex: 1,
     width: "100%",
     backgroundColor: "transparent",
+    color: "rgb(31,57,106)",
     display: "flex",
     alignItems: "center",
     padding: "0px 20px",
@@ -41,6 +42,14 @@ const styles = {
     paddingRight: "10px",
     fontSize: "15px",
     fontWeight: "600"
+  },
+  headerLeft: {
+    display: "flex",
+    gap: "20px",
+    alignItems: "center",
+    paddingLeft: "20px",
+    fontSize: "15px"
+    // fontWeight: "600"
   },
   content: {
     display: "flex",
@@ -58,6 +67,18 @@ const styles = {
     bottom: "0",
     color: "white",
     backgroundColor: "transparent"
+  },
+  button: {
+    fontWeight: "600",
+    fontFamily: "Roboto, sans-serif",
+    fontSize: "14px",
+    color: "rgb(31,57,106)"
+  },
+  inactiveBtn: {
+    fontWeight: "400",
+    fontFamily: "Roboto, sans-serif",
+    fontSize: "14px",
+    color: "rgb(31,57,106)"
   }
 } as const;
 
@@ -67,8 +88,17 @@ function App() {
   return (
     <Layout style={styles.layout}>
       <Header style={{ ...styles.header, justifyContent: "space-between" }}>
-        {/* <Logo /> */}
-        <div></div>
+        <div style={styles.headerLeft}>
+          <Button style={{ ...styles.button }} type="link">
+            Send/Receive
+          </Button>
+          <Button style={{ ...styles.inactiveBtn }} type="link">
+            OTC/Escrow
+          </Button>
+          <Button style={{ ...styles.inactiveBtn }} type="link">
+            My Transfer
+          </Button>
+        </div>
         <div style={styles.headerRight}>
           <ChainSelector />
           <ConnectAccount />
@@ -85,22 +115,22 @@ function App() {
   );
 }
 
-export const Logo = () => {
-  const [width] = useWindowWidthAndHeight();
-  const isMobile = width <= 768;
-  return (
-    <>
-      {isMobile ? (
-        <div style={{ paddingTop: "30px" }}>
-          <img src={web3Boilerplate_logo} alt="web3Boilerplate_logo" width="80px" />;
-        </div>
-      ) : (
-        <div style={{ paddingTop: "45px" }}>
-          <img src={web3Boilerplate_logo} alt="web3Boilerplate_logo" width="120px" />;
-        </div>
-      )}
-    </>
-  );
-};
+// export const Logo = () => {
+//   const [width] = useWindowWidthAndHeight();
+//   const isMobile = width <= 768;
+//   return (
+//     <>
+//       {isMobile ? (
+//         <div style={{ paddingTop: "30px" }}>
+//           <img src={web3Boilerplate_logo} alt="web3Boilerplate_logo" width="80px" />
+//         </div>
+//       ) : (
+//         <div style={{ paddingTop: "45px" }}>
+//           <img src={web3Boilerplate_logo} alt="web3Boilerplate_logo" width="120px" />
+//         </div>
+//       )}
+//     </>
+//   );
+// };
 
 export default App;

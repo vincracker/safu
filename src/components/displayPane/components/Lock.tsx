@@ -5,6 +5,7 @@ import {
   NumberInput,
   NumberInputField,
   Stack,
+  HStack,
   Button,
   Select,
   InputGroup,
@@ -91,7 +92,7 @@ const Lock: React.FC = () => {
             message.error("Error!" + `\n\n${error}`);
           } else if (error instanceof Error) {
             message.error("Error!" + `\n\n${error.message}`);
-            console.log(error);
+            // console.log(error);
           }
         }
       }
@@ -104,44 +105,62 @@ const Lock: React.FC = () => {
     <div style={{ width: "100%", minWidth: "250px" }}>
       <Stack spacing={3} align={"center"}>
         <div style={{ display: "inline-flex", gap: "10px", width: "80%" }}>
-          <Input variant="outline" placeholder="Address" size="lg" onChange={(e) => setReceiver(e.target.value)} />
+          <Input
+            focusBorderColor="darkblue"
+            variant="filled"
+            placeholder="Address"
+            size="lg"
+            onChange={(e) => setReceiver(e.target.value)}
+          />
         </div>
         <div style={{ width: "80%" }}>
-          <InputGroup size="lg">
-            <NumberInput style={{ width: "100%" }}>
-              <NumberInputField placeholder="Amount" onChange={(e) => setAmount(Number(e.target.value))} />
+          <InputGroup size="lg" gap={10}>
+            <NumberInput style={{ width: "100%" }} variant="filled" focusBorderColor="darkblue">
+              <HStack style={{ position: "relative" }}>
+                <NumberInputField placeholder="Amount" onChange={(e) => setAmount(Number(e.target.value))} />
+                <div style={{ position: "absolute", right: "1%" }}>
+                  <Select
+                    bgColor={"blue.700"}
+                    color={"white"}
+                    // variant="filled"
+                    style={{ borderRadius: "20px" }}
+                    size="sm"
+                    onChange={(e) => {
+                      setIsEth(e.target.value == "eth" ? true : false);
+                    }}
+                  >
+                    <option value="eth">
+                      <img src="https://s2.coinmarketcap.com/static/img/coins/200x200/1027.png" /> ETH
+                    </option>
+                    <option value="erc20">ERC20</option>
+                  </Select>
+                </div>
+              </HStack>
             </NumberInput>
-            <Select
-              size="lg"
-              style={{ width: "100%" }}
-              onChange={(e) => {
-                setIsEth(e.target.value == "eth" ? true : false);
-              }}
-            >
-              <option value="eth">ETH</option>
-              <option value="erc20">ERC20</option>
-            </Select>
           </InputGroup>
         </div>
         <div style={{ width: "80%" }}>
-          <Input variant="outline" placeholder="Passpharse" size="lg" onChange={(e) => setPasspharse(e.target.value)} />
+          <Input
+            focusBorderColor="darkblue"
+            variant="filled"
+            placeholder="Passpharse"
+            size="lg"
+            onChange={(e) => setPasspharse(e.target.value)}
+          />
         </div>
         <div style={{ width: "80%" }}>
           <Button
-            colorScheme={isEth || approved ? "purple" : "facebook"}
+            // colorScheme={isEth || approved ? "purple" : "facebook"}
+            colorScheme={"facebook"}
             size="lg"
             width={"100%"}
             onClick={(e) => LockAsset(e)}
             isLoading={loading}
           >
-            {isEth || approved ? "Lock" : "Approved"}
+            {isEth || approved ? "Send" : "Approved"}
           </Button>
         </div>
         <Stack spacing={3} style={{ width: "100%", color: "black" }}>
-          {/* <Alert status="error">
-            <AlertIcon />
-            There was an error processing your request
-          </Alert> */}
           {success && (
             <Alert status="success">
               <AlertIcon />

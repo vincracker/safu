@@ -6,7 +6,7 @@ import { Button } from "antd";
 import { metaMask } from "../../connectors/metaMask";
 import { walletConnect } from "../../connectors/walletConnect";
 import { getEllipsisTxt } from "../../utils/formatters";
-import Jazzicons from "../Jazzicons";
+// import Jazzicons from "../Jazzicons";
 import ConnectModal from "./ConnectModal";
 import DisconnectModal from "./DisconnectModal";
 
@@ -19,7 +19,7 @@ const styles = {
     alignItems: "center",
     width: "fit-content",
     borderRadius: "7px",
-    backgroundColor: "black",
+    backgroundColor: "rgb(31,57,106)",
     cursor: "pointer"
   },
   button: {
@@ -31,7 +31,7 @@ const styles = {
     fontSize: "15px",
     margin: "20px 20px",
     border: "none",
-    background: "black",
+    background: "rgb(31,57,106)",
     color: "white"
   },
   text: {
@@ -91,7 +91,7 @@ const ConnectAccount: React.FC<WantedChain> = () => {
             {account && typeof account === "string" && (
               <p style={{ marginRight: "5px", ...styles.text }}>{getEllipsisTxt(account, 6)}</p>
             )}
-            <Jazzicons seed={account} />
+            {/* <Jazzicons seed={account} /> */}
           </div>
 
           <DisconnectModal isModalOpen={isModalVisible} setIsModalOpen={setIsModalVisible} disconnect={disconnect} />

@@ -65,14 +65,14 @@ const Unlock: React.FC = () => {
 
         <div style={{ width: "80%" }}>
           <Button
-            colorScheme="purple"
+            colorScheme="facebook"
             size="lg"
             width={"100%"}
             onClick={(e) => {
               UnlockAsset(e);
             }}
           >
-            Unlock
+            Receive
           </Button>
         </div>
         <Stack spacing={3} style={{ width: "100%", color: "black" }}>

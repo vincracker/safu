@@ -6,13 +6,15 @@ import { createRoot } from "react-dom/client";
 
 import App from "./App";
 import connectors from "./connectors";
+import theme from "./constants/theme";
+
 import "./index.css";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <Web3ReactProvider connectors={connectors}>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <App />
       </ChakraProvider>
     </Web3ReactProvider>

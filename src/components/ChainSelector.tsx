@@ -12,11 +12,12 @@ import { useSwitchChain } from "../hooks/useSwitchChain";
 
 const styles = {
   item: {
-    fontWeight: "500",
+    fontWeight: "600",
     fontFamily: "Roboto, sans-serif",
     fontSize: "14px"
   },
   button: {
+    color: "rgb(31,57,106)",
     display: "flex",
     alignItems: "center",
     height: "42px",
@@ -77,7 +78,7 @@ function ChainSelector() {
   return (
     <div>
       <Dropdown menu={{ items, onClick }}>
-        <Button style={{ ...styles.button, ...styles.item }}>
+        <Button type="link" style={{ ...styles.button, ...styles.item }}>
           {!selected && <span style={{ marginLeft: "5px" }}>Select Chain</span>}
           {selected && (
             <div style={{ display: "flex", alignItems: "center" }}>
