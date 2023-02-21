@@ -1,23 +1,39 @@
 [
   {
+    "anonymous": false,
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_fee_rate",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_fee_collect_address",
-        "type": "address"
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "name": "Data",
+    "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
       {
         "indexed": false,
         "internalType": "address",
@@ -65,9 +81,41 @@
         "internalType": "uint256",
         "name": "swap_amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "swap_deadline",
+        "type": "uint256"
       }
     ],
-    "name": "Add_New_Asset",
+    "name": "New_Order",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "Order_Cancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "Order_Completed",
     "type": "event"
   },
   {
@@ -187,16 +235,21 @@
       },
       {
         "internalType": "address",
-        "name": "_swap_address",
+        "name": "_swap_token_address",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_swap_token_amount",
+        "name": "_swap_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_swap_deadline",
         "type": "uint256"
       }
     ],
-    "name": "add_asset_to_contract",
+    "name": "add_order",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -204,14 +257,14 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "passphrase",
-        "type": "bytes32"
+        "internalType": "string",
+        "name": "passphrase_string",
+        "type": "string"
       }
     ],
     "name": "claim_asset",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -242,12 +295,25 @@
   },
   {
     "inputs": [],
-    "name": "fee_rate",
+    "name": "fee_collect_cap",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "fee_rate",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
       }
     ],
     "stateMutability": "view",
@@ -317,6 +383,72 @@
   {
     "inputs": [
       {
+        "internalType": "uint16",
+        "name": "_fee_rate",
+        "type": "uint16"
+      },
+      {
+        "internalType": "address",
+        "name": "_fee_collect_address",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_fee_collect_cap",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_stable_coins",
+        "type": "address[]"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "passphrase_hash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "is_passphrase_unique",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token_address",
+        "type": "address"
+      }
+    ],
+    "name": "is_stable_coin",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -336,11 +468,11 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "passphrase",
+        "name": "passphrase_hash",
         "type": "bytes32"
       }
     ],
-    "name": "retrieve_unclaimed_asset",
+    "name": "retrieve_unclaimed_order",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -380,13 +512,58 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_new_fee_rate",
+        "name": "_new_fee_collect_cap",
         "type": "uint256"
+      }
+    ],
+    "name": "set_fee_collect_cap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_new_fee_rate",
+        "type": "uint16"
       }
     ],
     "name": "set_fee_rate",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_stable_coins",
+        "type": "address[]"
+      }
+    ],
+    "name": "set_stable_coins",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "stable_coins",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -406,19 +583,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "passphrase",
-        "type": "bytes32"
-      }
-    ],
-    "name": "swap_asset",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

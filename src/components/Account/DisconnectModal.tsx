@@ -48,6 +48,7 @@ const DisconnectModal: React.FC<ConnectModalProps> = ({ isModalOpen, setIsModalO
         size="large"
         type="primary"
         style={{
+          backgroundColor: "rgb(31,57,106)",
           width: "100%",
           marginTop: "10px",
           borderRadius: "0.5rem",

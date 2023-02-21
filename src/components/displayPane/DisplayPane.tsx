@@ -67,7 +67,7 @@ const DisplayPane: React.FC = () => {
                 <Text fontSize="2xl" fontWeight={800} opacity={isLock ? 1 : 0.3}>
                   Send
                 </Text>
-                <Switch size="lg" onChange={() => setIsLock(!isLock)} variant={"boxy"} aria-label={"lol"} />
+                <Switch size="lg" onChange={() => setIsLock(!isLock)} variant={"boxy"} />
                 <Text fontSize="2xl" fontWeight={800} opacity={isLock ? 0.3 : 1}>
                   Receive
                 </Text>

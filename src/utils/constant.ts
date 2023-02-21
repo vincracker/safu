@@ -1,1 +1,2 @@
-export const contract_address = "0xE6bC724d9B1B0e04773cD900D0337483090d327A";
+export const contract_address = "0xf8313A3Dc723D8D01AbD948d3434d68E43Aa86dd";
+export const etherscan = "https://goerli.etherscan.io/";
