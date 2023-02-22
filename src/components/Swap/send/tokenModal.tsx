@@ -15,6 +15,9 @@ const customStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
     padding: "0px"
+  },
+  overlay: {
+    background: "rgba(1, 2, 30, 0.49)"
   }
 };
 
