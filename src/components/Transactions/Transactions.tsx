@@ -70,6 +70,7 @@ export default function Transactions() {
   const [claimModal, setClaimModal] = useState(false);
   const [canceled, setCanceled] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fee, setFeeRate] = useState(0);
   const [pp, setPP] = useState("");
   const { refetch } = useQuery(GET_ORDERS, {
     onCompleted: (data) => {
@@ -101,6 +102,13 @@ export default function Transactions() {
   const { account, provider } = useWeb3React();
   // const { state, dispatch } = UseAppContext();
   const chiron_contract: Contract | undefined = useContract(contract_address, abi);
+  useEffect(() => {
+    if (chiron_contract) {
+      chiron_contract.fee_rate().then((res: number) => {
+        setFeeRate(res);
+      });
+    }
+  }, [chiron_contract]);
 
   const handleConfirm = async () => {
     if (pp != "") {
@@ -594,89 +602,155 @@ export default function Transactions() {
                       className="px-4 py-3 flex items-center justify-between border-b border-gray-500"
                       key={order.id}
                     >
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-x-3">
-                          <img src={eth} alt="eth" className="h-8 w-8" />
+                      {!order.isSwap ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-x-3">
+                            <img src={eth} alt="eth" className="h-8 w-8" />
+                            <p>
+                              {ethers.utils.formatEther(order.amount)}{" "}
+                              {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
+                                ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
+                                : "UNK"}
+                            </p>
+                          </div>
                           <p>
-                            {ethers.utils.formatEther(order.amount)}{" "}
-                            {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
-                              ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
-                              : "UNK"}
+                            {order.sender.slice(0, 10)}...
+                            {order.sender.slice(order.sender.length - 10, order.sender.length)}
                           </p>
                         </div>
-                        <div className="flex items-center gap-x-3">
-                          {account.toLowerCase() == order.receiver ? (
-                            <div className="flex flex-col">
-                              <p> Sender Address:</p>
+                      ) : (
+                        <div className="space-y-2 flex-col w-full">
+                          <div className="flex space-x-2 justify-between">
+                            <div className="flex items-center gap-x-3">
+                              <img
+                                src={
+                                  tokenslist.filter((token) => token.address == order.swapTokenAddress).length > 0
+                                    ? tokenslist.filter((token) => token.address == order.swapTokenAddress)[0].logoURI
+                                    : "/https://www.google.com/search?q=erc20+token+icon&sxsrf=AJOqlzWFemc1K-V90X4rqmz8jC9Lje0U5g:1675922616189&source=lnms&tbm=isch&sa=X&ved=2ahUKEwj3yNWh4of9AhXGkmoFHbyhBOoQ_AUoAXoECAEQAw&biw=1680&bih=862&dpr=2#imgrc=7LqRKq0I4xkygM"
+                                }
+                                alt="eth"
+                                className="h-8 w-8"
+                              />
+                              <img
+                                src={
+                                  tokenslist.filter((token) => token.address == order.swapTokenAddress).length > 0
+                                    ? tokenslist.filter((token) => token.address == order.swapTokenAddress)[0].logoURI
+                                    : "/https://www.google.com/search?q=erc20+token+icon&sxsrf=AJOqlzWFemc1K-V90X4rqmz8jC9Lje0U5g:1675922616189&source=lnms&tbm=isch&sa=X&ved=2ahUKEwj3yNWh4of9AhXGkmoFHbyhBOoQ_AUoAXoECAEQAw&biw=1680&bih=862&dpr=2#imgrc=7LqRKq0I4xkygM"
+                                }
+                                alt="eth"
+                                className="h-8 w-8"
+                              />
                               <p>
-                                {order.receiver.slice(0, 10)}...
-                                {order.receiver.slice(order.receiver.length - 10, order.receiver.length)}
+                                {ethers.utils.formatEther(order.amount)}{" "}
+                                {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
+                                  ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
+                                  : "UNK"}
+                              </p>
+                              <p> {"< >"}</p>
+                              <p>
+                                {ethers.utils.formatEther(order.swapAmount)}{" "}
+                                {tokenslist.filter((token) => token.address == order.swapTokenAddress).length > 0
+                                  ? tokenslist.filter((token) => token.address == order.swapTokenAddress)[0].symbol
+                                  : "UNK"}
                               </p>
                             </div>
-                          ) : (
-                            <div className="flex flex-col">
-                              <p> Receiver Address:</p>
-                              <p>
-                                {order.sender.slice(0, 10)}...
-                                {order.sender.slice(order.sender.length - 10, order.sender.length)}
-                              </p>
-                            </div>
-                          )}
-                          <div className="rounded-full overflow-hidden w-6 h-6 inline-block bg-[#2362FF]">
-                            <svg x="0" y="0" width="24" height="24">
-                              <rect
-                                x="0"
-                                y="0"
-                                width="24"
-                                height="24"
-                                transform="translate(-3.000997466513636 5.553768960528579) rotate(126.2 12 12)"
-                                fill="#1897F2"
-                              ></rect>
-                              <rect
-                                x="0"
-                                y="0"
-                                width="24"
-                                height="24"
-                                transform="translate(-8.596187094007108 -4.434598946399147) rotate(266.4 12 12)"
-                                fill="#F2A202"
-                              ></rect>
-                              <rect
-                                x="0"
-                                y="0"
-                                width="24"
-                                height="24"
-                                transform="translate(19.099437161091057 5.921056634506256) rotate(75.4 12 12)"
-                                fill="#FB185C"
-                              ></rect>
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
+                            <div className="space-y-2 text-end">
+                              <div className="flex flex-col items-center gap-x-2">
+                                {/* <p>{order.senderHash.slice(0, 10)}...</p> */}
+                                <a href={"https://goerli.etherscan.io/tx/" + order.receiverHash} target="_blank">
+                                  <img src={link} alt="link" className="w-6 h-6" />
+                                </a>
+                              </div>
 
-                      <div className="space-y-2 text-end">
-                        <div className="flex items-start">
-                          {/* <p>{transaction.TxId}</p> */}
-                          <div className="flex justify-center w-full  gap-x-2">
-                            {order.status.toString() === "0" ? (
-                              <button className="bg-[#4F57A8] text-white px-4 py-0.5 rounded-sm" disabled>
-                                {" "}
-                                Sending
-                              </button>
-                            ) : order.status.toString() === "1" ? (
-                              <button className="bg-[#4F57A8] text-white px-4 py-0.5 rounded-sm" disabled>
-                                Cancelled
-                              </button>
-                            ) : order.status.toString() === "2" ? (
-                              <button className="bg-[#4F57A8] text-white px-4 py-0.5 rounded-sm" disabled>
-                                Received
-                              </button>
-                            ) : null}
-                            <a href="https://goerli.etherscan.io/" target="_blank">
-                              <img src={link} alt="link" className="w-6 h-6" />
-                            </a>
+                              <div className="flex items-start">
+                                {/* <p>{transaction.TxId}</p> */}
+                                <div className="flex justify-center w-full  gap-x-2">
+                                  {order.status.toString() === "0" ? (
+                                    <button className="bg-[#4F57A8] text-white px-4 py-0.5 rounded-sm" disabled>
+                                      {" "}
+                                      Sending
+                                    </button>
+                                  ) : order.status.toString() === "1" ? (
+                                    <button className="bg-[#4F57A8] text-white px-4 py-0.5 rounded-sm" disabled>
+                                      Cancelled
+                                    </button>
+                                  ) : order.status.toString() === "2" ? (
+                                    <button className="bg-[#39393a] text-white px-4 py-0.5 rounded-sm" disabled>
+                                      {account.toLowerCase() == order.sender ? "Sent" : "Received"}
+                                    </button>
+                                  ) : null}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-x-3">
+                            <p> Counterparty address:</p>
+                            <p>
+                              {order.sender.slice(0, 5)}...
+                              {order.sender.slice(order.sender.length - 5, order.sender.length)}
+                            </p>
+                            <div className="rounded-full overflow-hidden w-6 h-6 inline-block bg-[#2362FF]">
+                              <svg x="0" y="0" width="24" height="24">
+                                <rect
+                                  x="0"
+                                  y="0"
+                                  width="24"
+                                  height="24"
+                                  transform="translate(-3.000997466513636 5.553768960528579) rotate(126.2 12 12)"
+                                  fill="#1897F2"
+                                ></rect>
+                                <rect
+                                  x="0"
+                                  y="0"
+                                  width="24"
+                                  height="24"
+                                  transform="translate(-8.596187094007108 -4.434598946399147) rotate(266.4 12 12)"
+                                  fill="#F2A202"
+                                ></rect>
+                                <rect
+                                  x="0"
+                                  y="0"
+                                  width="24"
+                                  height="24"
+                                  transform="translate(19.099437161091057 5.921056634506256) rotate(75.4 12 12)"
+                                  fill="#FB185C"
+                                ></rect>
+                              </svg>
+                            </div>
+                          </div>
+                          <div>
+                            {account.toLowerCase() == order.sender ? (
+                              <div></div>
+                            ) : (
+                              <div className="flex-col gap-y-2">
+                                <div className="flex items-center gap-x-3 justify-between">
+                                  <p> You Sent:</p>
+                                  <p>
+                                    {ethers.utils.formatEther(order.swapAmount)}{" "}
+                                    {tokenslist.filter((token) => token.address == order.swapTokenAddress).length > 0
+                                      ? tokenslist.filter((token) => token.address == order.swapTokenAddress)[0].symbol
+                                      : "UNK"}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-x-3 justify-between">
+                                  <p> You Received:</p>
+                                  <p>
+                                    {ethers.utils.formatEther(
+                                      BigNumber.from(order.amount).sub(BigNumber.from(order.amount).mul(fee).div(10000))
+                                    )}
+                                    {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
+                                      ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
+                                      : "UNK"}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      </div>
+                      )}
+
+                      {/* <div className="space-y-2 text-end"></div> */}
                     </div>
                   );
                 })
@@ -984,9 +1058,10 @@ const ClaimModal = ({ order, cancelClaim, handleClaimSucceed }: PropsType) => {
               <img src={logo} alt="logo" className="w-20" />
               <p>Your trade has been completed</p>
               <p>
-                TxHash:
+                TxHash:{" "}
                 <a
                   href={"https://goerli.etherscan.io/tx/" + txHash}
+                  target="_blank"
                   className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
                 >
                   {txHash.slice(0, 30)}.....

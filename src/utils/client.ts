@@ -1,6 +1,8 @@
 import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 
-const link = new HttpLink({ uri: "https://api.studio.thegraph.com/query/39890/easysendcrypto/v0.0.5" });
+import { graphUrl } from "./constant";
+
+const link = new HttpLink({ uri: graphUrl });
 
 const cache = new InMemoryCache();
 

@@ -32,9 +32,10 @@ export default function Sended({ transaction }: PropsType) {
       <div className="text-center">
         <p>Transfer is now pending.</p>
         <p>
-          TxHash:
+          TxHash:{" "}
           <a
             href={"https://goerli.etherscan.io/tx/" + transaction.txHash}
+            target="_blank"
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
           >
             {transaction.txHash.slice(0, 30)}.....
