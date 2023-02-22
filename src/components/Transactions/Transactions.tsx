@@ -160,7 +160,7 @@ export default function Transactions() {
     <div className="font-Lato border-2 border-primary rounded-2xl md:w-[40%] mx-auto  mt-6">
       {modal && (
         <div className="fixed w-full h-full top-0 left-0 bg-[#04073882] backdrop-blur-sm flex flex-col items-center justify-center">
-          <div className="w-1/4 h-60 border-primary p-10 border-2 bg-white top-[50%] left-[30%] rounded-lg flex flex-col items-center gap-5">
+          <div className="w-1/4 h-fit border-primary p-10 border-2 bg-white top-[50%] left-[30%] rounded-lg flex flex-col items-center gap-5">
             {!canceled ? (
               <>
                 <p className="text-xl font-bold text-primary">Do you confirm cancel the order?</p>
@@ -276,20 +276,46 @@ export default function Transactions() {
                   return (
                     <div className="px-4 py-3 flex items-center border-b border-gray-500" key={order.id}>
                       {!order.isSwap ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-x-3">
-                            <img src={eth} alt="eth" className="h-8 w-8" />
+                        <div className="w-full flex justify-between">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-x-3">
+                              <img src={eth} alt="eth" className="h-8 w-8" />
+                              <p>
+                                {ethers.utils.formatEther(order.amount)}{" "}
+                                {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
+                                  ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
+                                  : "UNK"}
+                              </p>
+                            </div>
                             <p>
-                              {ethers.utils.formatEther(order.amount)}{" "}
-                              {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
-                                ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
-                                : "UNK"}
+                              {order.receiver.slice(0, 10)}...
+                              {order.receiver.slice(order.receiver.length - 10, order.receiver.length)}
                             </p>
                           </div>
-                          <p>
-                            {order.receiver.slice(0, 10)}...
-                            {order.receiver.slice(order.receiver.length - 10, order.receiver.length)}
-                          </p>
+                          <div className="space-y-2">
+                            <div className="flex flex-col items-center gap-x-2">
+                              {/* <p>{order.senderHash.slice(0, 10)}...</p> */}
+                              <a target="_blank" href={etherscan + "tx/" + order.senderHash}>
+                                <img src={link} alt="link" className="w-6 h-6" />
+                              </a>
+                            </div>
+                            {order.status.toString() === "0" ? (
+                              <button
+                                className="bg-[#4F57A8] text-white px-4 py-0.5 rounded-sm"
+                                onClick={() => {
+                                  // dispatch({
+                                  //   type: "cancel_transaction",
+                                  //   payload: transaction.id
+                                  // });
+                                  handleCancel(order.passphrase);
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            ) : order.status.toString() === "1" ? (
+                              <button className="bg-[#4F57A8] text-white px-4 py-0.5 rounded-sm">Cancelled</button>
+                            ) : null}
+                          </div>
                         </div>
                       ) : (
                         <div className="space-y-2 flex-col w-full">
@@ -590,7 +616,7 @@ export default function Transactions() {
               .filter(
                 (order) =>
                   (order.sender == account.toLowerCase() || order.receiver == account.toLowerCase()) &&
-                  order.status.toString() === "2"
+                  (order.status.toString() === "2" || order.status.toString() === "1")
               )
               .filter((order: Order) => (location.pathname == "/app" ? order.isSwap == false : order.isSwap == true))
               .length > 0 ? (
@@ -603,20 +629,75 @@ export default function Transactions() {
                       key={order.id}
                     >
                       {!order.isSwap ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-x-3">
-                            <img src={eth} alt="eth" className="h-8 w-8" />
-                            <p>
-                              {ethers.utils.formatEther(order.amount)}{" "}
-                              {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
-                                ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
-                                : "UNK"}
-                            </p>
+                        <div className="flex w-full justify-between">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-x-3">
+                              <img src={eth} alt="eth" className="h-8 w-8" />
+                              <p>
+                                {ethers.utils.formatEther(order.amount)}{" "}
+                                {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
+                                  ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
+                                  : "UNK"}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-x-3">
+                              <p> Counterparty address:</p>
+                              <p>
+                                {order.receiver.slice(0, 5)}...
+                                {order.receiver.slice(order.sender.length - 5, order.receiver.length)}
+                              </p>
+                              <div className="rounded-full overflow-hidden w-6 h-6 inline-block bg-[#2362FF]">
+                                <svg x="0" y="0" width="24" height="24">
+                                  <rect
+                                    x="0"
+                                    y="0"
+                                    width="24"
+                                    height="24"
+                                    transform="translate(-3.000997466513636 5.553768960528579) rotate(126.2 12 12)"
+                                    fill="#1897F2"
+                                  ></rect>
+                                  <rect
+                                    x="0"
+                                    y="0"
+                                    width="24"
+                                    height="24"
+                                    transform="translate(-8.596187094007108 -4.434598946399147) rotate(266.4 12 12)"
+                                    fill="#F2A202"
+                                  ></rect>
+                                  <rect
+                                    x="0"
+                                    y="0"
+                                    width="24"
+                                    height="24"
+                                    transform="translate(19.099437161091057 5.921056634506256) rotate(75.4 12 12)"
+                                    fill="#FB185C"
+                                  ></rect>
+                                </svg>
+                              </div>
+                            </div>
                           </div>
-                          <p>
-                            {order.sender.slice(0, 10)}...
-                            {order.sender.slice(order.sender.length - 10, order.sender.length)}
-                          </p>
+                          <div className="space-y-2">
+                            <div className="flex flex-col items-center gap-x-2">
+                              {/* <p>{order.senderHash.slice(0, 10)}...</p> */}
+                              <a href={"https://goerli.etherscan.io/tx/" + order.receiverHash} target="_blank">
+                                <img src={link} alt="link" className="w-6 h-6" />
+                              </a>
+                            </div>
+                            <div className="flex items-start">
+                              {/* <p>{transaction.TxId}</p> */}
+                              <div className="flex justify-center w-full  gap-x-2">
+                                {order.status.toString() === "1" ? (
+                                  <button className="bg-[#39393a] text-white px-4 py-0.5 rounded-sm" disabled>
+                                    Cancelled
+                                  </button>
+                                ) : order.status.toString() === "2" ? (
+                                  <button className="bg-[#39393a] text-white px-4 py-0.5 rounded-sm" disabled>
+                                    {account.toLowerCase() == order.sender ? "Sent" : "Received"}
+                                  </button>
+                                ) : null}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       ) : (
                         <div className="space-y-2 flex-col w-full">
@@ -686,10 +767,18 @@ export default function Transactions() {
 
                           <div className="flex items-center gap-x-3">
                             <p> Counterparty address:</p>
-                            <p>
-                              {order.sender.slice(0, 5)}...
-                              {order.sender.slice(order.sender.length - 5, order.sender.length)}
-                            </p>
+                            {account.toLowerCase() == order.sender ? (
+                              <p>
+                                {order.receiver.slice(0, 5)}...
+                                {order.receiver.slice(order.sender.length - 5, order.receiver.length)}
+                              </p>
+                            ) : (
+                              <p>
+                                {order.sender.slice(0, 5)}...
+                                {order.sender.slice(order.sender.length - 5, order.sender.length)}
+                              </p>
+                            )}
+
                             <div className="rounded-full overflow-hidden w-6 h-6 inline-block bg-[#2362FF]">
                               <svg x="0" y="0" width="24" height="24">
                                 <rect
@@ -721,7 +810,30 @@ export default function Transactions() {
                           </div>
                           <div>
                             {account.toLowerCase() == order.sender ? (
-                              <div></div>
+                              <div className="flex-col gap-y-2">
+                                <div className="flex items-center gap-x-3 justify-between">
+                                  <p> You Sent:</p>
+                                  <p>
+                                    {ethers.utils.formatEther(order.amount)}{" "}
+                                    {tokenslist.filter((token) => token.address == order.tokenAddress).length > 0
+                                      ? tokenslist.filter((token) => token.address == order.tokenAddress)[0].symbol
+                                      : "UNK"}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-x-3 justify-between">
+                                  <p> You Received:</p>
+                                  <p>
+                                    {ethers.utils.formatEther(
+                                      BigNumber.from(order.swapAmount).sub(
+                                        BigNumber.from(order.swapAmount).mul(fee).div(10000)
+                                      )
+                                    )}
+                                    {tokenslist.filter((token) => token.address == order.swapTokenAddress).length > 0
+                                      ? tokenslist.filter((token) => token.address == order.swapTokenAddress)[0].symbol
+                                      : "UNK"}
+                                  </p>
+                                </div>
+                              </div>
                             ) : (
                               <div className="flex-col gap-y-2">
                                 <div className="flex items-center gap-x-3 justify-between">

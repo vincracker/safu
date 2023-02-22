@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 window.Buffer = window.Buffer || Buffer;
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { gql, useQuery } from "@apollo/client";
 import { useWeb3React } from "@web3-react/core";
@@ -25,6 +25,7 @@ type TransactionType = {
   amount: number;
   passphrase: string;
   receiver: string;
+  feeRate: number;
 };
 type TokenType = {
   name: string;
@@ -70,6 +71,7 @@ const Send = () => {
   const [addressError, setAddressError] = useState("");
   const { account, provider, chainId } = useWeb3React();
   const [orders, setOrders] = useState<Order[]>();
+  const [feeRate, setFeeRate] = useState<number>(0);
 
   const { refetch } = useQuery(GET_PENDING_ORDERS, {
     onCompleted: (data) => {
@@ -123,7 +125,8 @@ const Send = () => {
         chainId: chainId ? chainId : 0,
         amount: values.amount,
         passphrase: passphrase,
-        receiver: values.to
+        receiver: values.to,
+        feeRate: feeRate
       });
       setIsOpen(true);
     },
@@ -212,7 +215,7 @@ const Send = () => {
         }
       );
       // console.log(tx);
-      setTransactionData({ txHash: tx.hash, chainId: chainId, amount, passphrase, receiver });
+      setTransactionData({ txHash: tx.hash, chainId: chainId, amount, passphrase, receiver, feeRate });
       refetch();
       // message.info(`Success!\n\nTx Hash: ${tx.hash}`);
       // setTxHash(tx.hash);
@@ -244,6 +247,14 @@ const Send = () => {
   const hashPP = (pp: string): string => {
     return "0x" + keccak256(Buffer.from(pp)).toString("hex");
   };
+
+  useEffect(() => {
+    if (chiron_contract) {
+      chiron_contract.fee_rate().then((res: any) => {
+        setFeeRate(+res);
+      });
+    }
+  }, []);
 
   // console.log(keccak256(Buffer.from("ss")).toString("hex"));
 
@@ -331,8 +342,9 @@ const Send = () => {
               </div>
               {formik.values.amount > 0 && error.length <= 0 ? (
                 <p>
-                  Counterparty will receive {(0.1 * formik.values.amount).toFixed(4)} {formik.values.token.symbol} net
-                  of fee
+                  Counterparty will receive{" "}
+                  {(formik.values.amount - (formik.values.amount * feeRate) / 10000).toFixed(6)}{" "}
+                  {formik.values.token.symbol} net of fee
                 </p>
               ) : null}
               {error.length > 0 ? <p className="text-red-500 text-end">{error}</p> : null}
@@ -408,6 +420,7 @@ const Send = () => {
         tokenName={formik.values.token.symbol}
         amount={formik.values.amount}
         to={formik.values.to}
+        feeRate={feeRate}
         handleConfirm={handleConfirm}
         resetForm={formik.resetForm}
       />

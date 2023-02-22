@@ -30,7 +30,7 @@ export default function Sended({ transaction }: PropsType) {
   return (
     <div className="font-Lato space-y-3">
       <div className="text-center">
-        <p>Transfer is now pending.</p>
+        <p>OTC completed</p>
         <p>
           TxHash:{" "}
           <a
@@ -42,7 +42,7 @@ export default function Sended({ transaction }: PropsType) {
           </a>
         </p>
 
-        <p>Send the passphrase below to the receiver to complete the transfer.</p>
+        <p>Send the passphrase below to the receiver to complete the swap.</p>
       </div>
 
       <div className="flex items-center justify-between">

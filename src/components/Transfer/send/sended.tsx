@@ -15,6 +15,7 @@ type TransactionType = {
   amount: number;
   passphrase: string;
   receiver: string;
+  feeRate: number;
 };
 
 interface PropsType {
@@ -26,13 +27,17 @@ export default function Sended({ transaction }: PropsType) {
   return (
     <div className="font-Lato space-y-3">
       <div className="text-center">
-        <p>Transfer is now pending.</p>
-        <a
-          href={"https://goerli.etherscan.io/tx/" + transaction.txHash}
-          className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
-        >
-          TxHash: {transaction.txHash.slice(0, 30)}.....
-        </a>
+        <p>Transfer is pending</p>
+        <p>
+          TxHash:
+          <a
+            href={"https://goerli.etherscan.io/tx/" + transaction.txHash}
+            className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+          >
+            {transaction.txHash.slice(0, 30)}.....
+          </a>
+        </p>
+
         <p>Send the passphrase below to the receiver to complete the transfer.</p>
       </div>
 
