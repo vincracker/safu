@@ -14,7 +14,7 @@ import abi from "../../../abi/SaFuSend.json";
 import { UseAppContext } from "../../../App";
 import { tokenslist } from "../../../constants/tokenData";
 import { useContract } from "../../../hooks/useContract";
-import { contract_address } from "../../../utils/constant";
+import { contract_address, stableCoins, feeCollectCap } from "../../../utils/constant";
 import Sended from "./sended";
 import SendModal from "./sendModal";
 import TokenModal from "./tokenModal";
@@ -25,7 +25,7 @@ type TransactionType = {
   amount: number;
   passphrase: string;
   receiver: string;
-  feeRate: number;
+  fee: number;
 };
 type TokenType = {
   name: string;
@@ -72,6 +72,7 @@ const Send = () => {
   const { account, provider, chainId } = useWeb3React();
   const [orders, setOrders] = useState<Order[]>();
   const [feeRate, setFeeRate] = useState<number>(0);
+  const [isCap, setIsCap] = useState<boolean>(false);
 
   const { refetch } = useQuery(GET_PENDING_ORDERS, {
     onCompleted: (data) => {
@@ -126,7 +127,7 @@ const Send = () => {
         amount: values.amount,
         passphrase: passphrase,
         receiver: values.to,
-        feeRate: feeRate
+        fee: isCap ? feeCollectCap : values.amount - (values.amount * feeRate) / 100000
       });
       setIsOpen(true);
     },
@@ -168,8 +169,20 @@ const Send = () => {
       } else {
         setAddressError("");
       }
+
+      const feeCollect = values.amount - (values.amount * feeRate) / 10000;
+      console.log(feeCollect);
+      if (is_stable_coin(values.token.address) && feeCollect > feeCollectCap) {
+        setIsCap(true);
+      } else {
+        setIsCap(false);
+      }
     }
   });
+
+  const is_stable_coin = (address: string): boolean => {
+    return stableCoins.filter((token) => token.toUpperCase() == address.toUpperCase()).length > 0;
+  };
 
   const handleConfirm = async () => {
     if (transactionData) {
@@ -215,7 +228,14 @@ const Send = () => {
         }
       );
       // console.log(tx);
-      setTransactionData({ txHash: tx.hash, chainId: chainId, amount, passphrase, receiver, feeRate });
+      setTransactionData({
+        txHash: tx.hash,
+        chainId: chainId,
+        amount,
+        passphrase,
+        receiver,
+        fee: isCap ? feeCollectCap : amount - (amount * feeRate) / 100000
+      });
       refetch();
       // message.info(`Success!\n\nTx Hash: ${tx.hash}`);
       // setTxHash(tx.hash);
@@ -341,11 +361,20 @@ const Send = () => {
                 </button>
               </div>
               {formik.values.amount > 0 && error.length <= 0 ? (
-                <p>
-                  Counterparty will receive{" "}
-                  {(formik.values.amount - (formik.values.amount * feeRate) / 10000).toFixed(6)}{" "}
-                  {formik.values.token.symbol} net of fee
-                </p>
+                <>
+                  {!isCap ? (
+                    <p>
+                      Counterparty will receive{" "}
+                      {(formik.values.amount - (formik.values.amount * feeRate) / 10000).toFixed(6)}{" "}
+                      {formik.values.token.symbol} net of fee
+                    </p>
+                  ) : (
+                    <p>
+                      Counterparty will receive {formik.values.amount - feeCollectCap} {formik.values.token.symbol} net
+                      of fee
+                    </p>
+                  )}
+                </>
               ) : null}
               {error.length > 0 ? <p className="text-red-500 text-end">{error}</p> : null}
             </label>
@@ -420,7 +449,7 @@ const Send = () => {
         tokenName={formik.values.token.symbol}
         amount={formik.values.amount}
         to={formik.values.to}
-        feeRate={feeRate}
+        fee={isCap ? feeCollectCap : (formik.values.amount * feeRate) / 10000}
         handleConfirm={handleConfirm}
         resetForm={formik.resetForm}
       />

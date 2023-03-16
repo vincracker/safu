@@ -30,7 +30,8 @@ interface PropsType {
   swapTokenName: string;
   swapAmount: number;
   swapDeadline: number;
-  feeRate: number;
+  sendFee: number;
+  receiveFee: number;
   handleConfirm: (deadline: number) => Promise<void>;
   resetForm: () => void;
 }
@@ -44,7 +45,8 @@ export default function SendModal({
   swapTokenName,
   swapAmount,
   swapDeadline,
-  feeRate,
+  sendFee,
+  receiveFee,
   handleConfirm,
   resetForm
 }: PropsType) {
@@ -130,17 +132,16 @@ export default function SendModal({
           ) : (
             <div className="flex flex-col items-center gap-y-3 w-full">
               <p>
-                You will send {amount} {tokenName} and receive{" "}
-                {(swapAmount - (feeRate / 10000) * swapAmount).toFixed(7)} {swapTokenName}
+                You will send {amount} {tokenName} and receive {(swapAmount - receiveFee).toFixed(7)} {swapTokenName}
               </p>
               <p>
                 with {to.slice(0, 5)}...{to.slice(to.length - 5, to.length - 1)} as your counterparty
               </p>
               <p>
-                Transaction fee: {((feeRate / 10000) * amount).toFixed(7)} {tokenName}
+                Transaction fee: {sendFee.toFixed(7)} {tokenName}
               </p>
               <p>
-                Recipient will receive {(amount - (feeRate / 10000) * amount).toFixed(7)} {tokenName}
+                Recipient will receive {(amount - sendFee).toFixed(7)} {tokenName}
               </p>
               <p>Order will expire in {new Date(swapDeadline * 1000).toLocaleString()}</p>
 

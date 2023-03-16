@@ -14,12 +14,18 @@ export default function HomeNav() {
         <Link to="/">
           <img src={logo} alt="logo" className="h-20" />
         </Link>
-        <ul className="hidden  md:flex items-center text-primary font-Lato font-medium gap-x-12">
+        <ul className="hidden  md:flex items-center text-primary font-Lato font-bold gap-x-20">
           <li className="">
             <Link to="/about">About</Link>
           </li>
           <li className="">
+            <Link to="/guide">Guide</Link>
+          </li>
+          <li className="">
             <Link to="/faq">FAQ</Link>
+          </li>
+          <li className="">
+            <Link to="/term">Term of use</Link>
           </li>
           <li className="text-white bg-primary px-5 py-2.5 rounded-lg">
             <Link to="/app">Launch App</Link>

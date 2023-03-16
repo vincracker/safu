@@ -27,7 +27,7 @@ interface PropsType {
   tokenName: string;
   amount: number;
   to: string;
-  feeRate: number;
+  fee: number;
   handleConfirm: () => Promise<void>;
   resetForm: () => void;
 }
@@ -38,7 +38,7 @@ export default function SendModal({
   tokenName,
   amount,
   to,
-  feeRate,
+  fee,
   handleConfirm,
   resetForm
 }: PropsType) {
@@ -127,10 +127,10 @@ export default function SendModal({
                 You will send {amount} {tokenName}
               </p>
               <p>
-                Recipient will receive {(amount - (amount * feeRate) / 10000).toFixed(5)} {tokenName}
+                Recipient will receive {(amount - fee).toFixed(5)} {tokenName}
               </p>
               <p>
-                Transaction fee: {((amount * feeRate) / 10000).toFixed(5)} {tokenName}
+                Transaction fee: {fee.toFixed(5)} {tokenName}
               </p>
               <div className="w-full flex justify-center items-center gap-x-3">
                 <button className="bg-gray-400 text-white w-full py-1 rounded-lg" onClick={closeModal}>

@@ -24,11 +24,20 @@ interface PropsType {
   setIsOpen: (e: boolean) => void;
   amount: number;
   token: string;
+  fee: number;
   handleConfirm: () => Promise<void>;
   resetForm: () => void;
 }
 
-export default function ReceiveModal({ modalIsOpen, setIsOpen, amount, token, handleConfirm, resetForm }: PropsType) {
+export default function ReceiveModal({
+  modalIsOpen,
+  setIsOpen,
+  amount,
+  token,
+  fee,
+  handleConfirm,
+  resetForm
+}: PropsType) {
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -49,7 +58,7 @@ export default function ReceiveModal({ modalIsOpen, setIsOpen, amount, token, ha
         resetForm();
         closeModal();
         dispatch({
-          type: "received"
+          type: "received_transaction"
         });
       })
       .catch((error) => {
@@ -77,8 +86,8 @@ export default function ReceiveModal({ modalIsOpen, setIsOpen, amount, token, ha
             </div>
           ) : (
             <div className="flex flex-col items-center gap-y-3 w-full">
-              <p>You would receive {(amount - 0.1 * amount).toFixed(4) + " " + token} </p>
-              <p>Transaction fee: {0.1 * amount + " " + token}</p>
+              <p>You would receive {(amount - fee).toFixed(5) + " " + token} </p>
+              <p>Transaction fee: {fee.toFixed(5) + " " + token}</p>
               <div className="w-full flex justify-center items-center gap-x-3">
                 <button className="bg-gray-400 text-white w-full py-1 rounded-lg" onClick={closeModal}>
                   Back

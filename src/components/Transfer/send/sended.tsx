@@ -15,7 +15,7 @@ type TransactionType = {
   amount: number;
   passphrase: string;
   receiver: string;
-  feeRate: number;
+  fee: number;
 };
 
 interface PropsType {
@@ -26,10 +26,12 @@ export default function Sended({ transaction }: PropsType) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="font-Lato space-y-3">
-      <div className="text-center">
-        <p>Transfer is pending</p>
+      <div className="flex-col space-y-2">
+        <p className="text-xl">
+          <b>Transfer is pending</b>
+        </p>
         <p>
-          TxHash:
+          TxHash: {"  "}
           <a
             href={"https://goerli.etherscan.io/tx/" + transaction.txHash}
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
@@ -38,29 +40,35 @@ export default function Sended({ transaction }: PropsType) {
           </a>
         </p>
 
-        <p>Send the passphrase below to the receiver to complete the transfer.</p>
+        {/* <p>Send the passphrase below to the receiver to complete the transfer.</p> */}
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-primary font-bold text-2xl lg:text-3xl">{"< " + transaction.passphrase + " >"}</p>
-        {!copied ? (
-          <CopyToClipboard text={transaction.passphrase}>
-            <button
-              onClick={() => {
-                setCopied(true);
-                setTimeout(() => {
-                  setCopied(false);
-                }, 2000);
-              }}
-            >
-              <img src={copy} alt="copy" className="w-8 h-8" />
+      <div className="flex-col">
+        <p className="text-xl">
+          {" "}
+          <b>Passphrase</b>
+        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-primary font-bold text-2xl lg:text-3xl">{"" + transaction.passphrase + ""}</p>
+          {!copied ? (
+            <CopyToClipboard text={transaction.passphrase}>
+              <button
+                onClick={() => {
+                  setCopied(true);
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 2000);
+                }}
+              >
+                <img src={copy} alt="copy" className="w-8 h-8" />
+              </button>
+            </CopyToClipboard>
+          ) : (
+            <button>
+              <img src={checkmark} alt="checkmark" className="w-8 h-8" />
             </button>
-          </CopyToClipboard>
-        ) : (
-          <button>
-            <img src={checkmark} alt="checkmark" className="w-8 h-8" />
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="bg-gray-200 p-1">

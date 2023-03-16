@@ -14,7 +14,7 @@ import abi from "../../../abi/SaFuSend.json";
 import { UseAppContext } from "../../../App";
 import { tokenslist } from "../../../constants/tokenData";
 import { useContract } from "../../../hooks/useContract";
-import { contract_address } from "../../../utils/constant";
+import { contract_address, stableCoins, feeCollectCap } from "../../../utils/constant";
 import Sended from "./sended";
 import SendModal from "./sendModal";
 import TokenModal from "./tokenModal";
@@ -29,7 +29,8 @@ type TransactionType = {
   swapToken: string;
   swapAmount: number;
   swapDeadline: number;
-  feeRate: number;
+  sendTokenFee: number;
+  swapTokenFee: number;
 };
 type TokenType = {
   name: string;
@@ -78,7 +79,8 @@ const Send = () => {
 
   const [modalIsOpen, setIsOpen] = useState(false);
   const [timestamp, setTimestamp] = useState(0);
-  const [tokenModalIsOpen, setTokenModalIsOpen] = useState(false);
+  const [sendTokenModalIsOpen, setSendTokenModalIsOpen] = useState(false);
+  const [swapTokenModalIsOpen, setSwapTokenModalIsOpen] = useState(false);
   const [transactionData, setTransactionData] = useState<TransactionType>();
   const [approve, setApproved] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -125,8 +127,12 @@ const Send = () => {
     logoURI: tokenslist[0].logoURI
   };
 
-  const setToken = (token: TokenType) => {
-    formik.setFieldValue("token", token);
+  const setSendToken = (token: TokenType) => {
+    formik.setFieldValue("sendToken", token);
+  };
+
+  const setSwapToken = (token: TokenType) => {
+    formik.setFieldValue("receiveToken", token);
   };
 
   const formik = useFormik({
@@ -159,7 +165,14 @@ const Send = () => {
         swapToken: values.receiveToken.symbol,
         swapAmount: values.swapAmount,
         swapDeadline: localTime + Number(values.swapDeadline),
-        feeRate: feeRate
+        sendTokenFee:
+          is_stable_coin(values.sendToken.address) && (values.amount * feeRate) / 10000 >= feeCollectCap
+            ? feeCollectCap
+            : (values.amount * feeRate) / 10000,
+        swapTokenFee:
+          is_stable_coin(values.receiveToken.address) && (values.swapAmount * feeRate) / 10000 >= feeCollectCap
+            ? feeCollectCap
+            : (values.amount * feeRate) / 10000
       });
       setIsOpen(true);
     },
@@ -207,7 +220,7 @@ const Send = () => {
       } else {
         setAddressError("");
       }
-      console.log(values.swapDeadline);
+      // console.log(values.swapDeadline);
     }
   });
 
@@ -258,7 +271,7 @@ const Send = () => {
               : ethers.utils.parseEther("0")
         }
       );
-      await tx.wait();
+      // await tx.wait();
       setTransactionData({
         txHash: tx.hash,
         chainId: chainId,
@@ -269,7 +282,15 @@ const Send = () => {
         swapToken: formik.values.receiveToken.symbol,
         swapAmount: swap_amount,
         swapDeadline: swapDeadline,
-        feeRate: feeRate
+        sendTokenFee:
+          is_stable_coin(formik.values.sendToken.address) && (formik.values.amount * feeRate) / 10000 >= feeCollectCap
+            ? feeCollectCap
+            : (formik.values.amount * feeRate) / 10000,
+        swapTokenFee:
+          is_stable_coin(formik.values.receiveToken.address) &&
+          (formik.values.swapAmount * feeRate) / 10000 >= feeCollectCap
+            ? feeCollectCap
+            : (formik.values.amount * feeRate) / 10000
       });
       refetch();
       // message.info(`Success!\n\nTx Hash: ${tx.hash}`);
@@ -301,6 +322,10 @@ const Send = () => {
 
   const hashPP = (pp: string): string => {
     return "0x" + keccak256(Buffer.from(pp)).toString("hex");
+  };
+
+  const is_stable_coin = (address: string): boolean => {
+    return stableCoins.filter((coin) => coin.toUpperCase() == address.toUpperCase()).length > 0;
   };
 
   useEffect(() => {
@@ -335,7 +360,7 @@ const Send = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setTokenModalIsOpen(true);
+                    setSendTokenModalIsOpen(true);
                   }}
                 >
                   {formik.values.sendToken.logoURI == "/" && formik.values.sendToken.name == "Unknown token" ? (
@@ -361,11 +386,21 @@ const Send = () => {
                 </button>
               </div>
               {formik.values.amount > 0 && error.length <= 0 ? (
-                <p>
-                  Counterparty will receive{" "}
-                  {(formik.values.amount - (feeRate / 10000) * formik.values.amount).toFixed(7)}{" "}
-                  {formik.values.sendToken.symbol} net of fee
-                </p>
+                <>
+                  {is_stable_coin(formik.values.sendToken.address) &&
+                  (feeRate / 10000) * formik.values.amount >= feeCollectCap ? (
+                    <p>
+                      Counterparty will receive {(formik.values.amount - feeCollectCap).toFixed(7)}{" "}
+                      {formik.values.sendToken.symbol} net of fee
+                    </p>
+                  ) : (
+                    <p>
+                      Counterparty will receive{" "}
+                      {(formik.values.amount - (feeRate / 10000) * formik.values.amount).toFixed(7)}{" "}
+                      {formik.values.sendToken.symbol} net of fee
+                    </p>
+                  )}
+                </>
               ) : null}
               {error.length > 0 ? <p className="text-red-500 text-end">{error}</p> : null}
             </label>
@@ -401,19 +436,19 @@ const Send = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setTokenModalIsOpen(true);
+                    setSwapTokenModalIsOpen(true);
                   }}
                 >
-                  {formik.values.sendToken.logoURI == "/" && formik.values.sendToken.name == "Unknown token" ? (
+                  {formik.values.receiveToken.logoURI == "/" && formik.values.receiveToken.name == "Unknown token" ? (
                     <div className="w-10 rounded-full bg-indigo-400 flex justify-center items-center">UNK</div>
                   ) : (
                     <img
-                      src={formik.values.sendToken.logoURI}
-                      alt={formik.values.sendToken.symbol}
+                      src={formik.values.receiveToken.logoURI}
+                      alt={formik.values.receiveToken.symbol}
                       className="w-7 h-7 rounded-full"
                     />
                   )}
-                  <p>{formik.values.sendToken.symbol}</p>
+                  <p>{formik.values.receiveToken.symbol}</p>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-4 h-4"
@@ -427,11 +462,21 @@ const Send = () => {
                 </button>
               </div>
               {formik.values.swapAmount > 0 && error.length <= 0 ? (
-                <p>
-                  You will receive{" "}
-                  {(formik.values.swapAmount - (feeRate / 10000) * formik.values.swapAmount).toFixed(7)}{" "}
-                  {formik.values.receiveToken.symbol} net of fee
-                </p>
+                <>
+                  {is_stable_coin(formik.values.receiveToken.address) &&
+                  (feeRate / 10000) * formik.values.amount >= feeCollectCap ? (
+                    <p>
+                      Counterparty will receive {(formik.values.amount - feeCollectCap).toFixed(7)}{" "}
+                      {formik.values.receiveToken.symbol} net of fee
+                    </p>
+                  ) : (
+                    <p>
+                      Counterparty will receive{" "}
+                      {(formik.values.amount - (feeRate / 10000) * formik.values.amount).toFixed(7)}{" "}
+                      {formik.values.receiveToken.symbol} net of fee
+                    </p>
+                  )}
+                </>
               ) : null}
               {swapError.length > 0 ? <p className="text-red-500 text-end">{swapError}</p> : null}
             </label>
@@ -516,12 +561,14 @@ const Send = () => {
         swapTokenName={formik.values.receiveToken.symbol}
         swapAmount={formik.values.swapAmount}
         swapDeadline={timestamp + Number(formik.values.swapDeadline)}
-        feeRate={feeRate}
+        sendFee={transactionData ? transactionData.sendTokenFee : 0}
+        receiveFee={transactionData ? transactionData.swapTokenFee : 0}
         handleConfirm={handleConfirm}
         resetForm={formik.resetForm}
       />
 
-      <TokenModal modalIsOpen={tokenModalIsOpen} setIsOpen={setTokenModalIsOpen} setToken={setToken} />
+      <TokenModal modalIsOpen={sendTokenModalIsOpen} setIsOpen={setSendTokenModalIsOpen} setToken={setSendToken} />
+      <TokenModal modalIsOpen={swapTokenModalIsOpen} setIsOpen={setSwapTokenModalIsOpen} setToken={setSwapToken} />
     </div>
   );
 };

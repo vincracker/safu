@@ -54,7 +54,7 @@ export default function TokenModal({ modalIsOpen, setIsOpen, setToken }: PropsTy
       symbol: token.symbol,
       logoURI: token.logoURI
     });
-    console.log(token);
+    // console.log(token);
     closeModal();
   };
 

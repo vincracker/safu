@@ -29,8 +29,10 @@ export default function Sended({ transaction }: PropsType) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="font-Lato space-y-3">
-      <div className="text-center">
-        <p>OTC completed</p>
+      <div className="space-y-2">
+        <p className="text-xl">
+          <b>OTC transaction is pending...</b>
+        </p>
         <p>
           TxHash:{" "}
           <a
@@ -41,30 +43,34 @@ export default function Sended({ transaction }: PropsType) {
             {transaction.txHash.slice(0, 30)}.....
           </a>
         </p>
-
-        <p>Send the passphrase below to the receiver to complete the swap.</p>
       </div>
 
-      <div className="flex items-center justify-between">
-        <p className="text-primary font-bold text-2xl lg:text-3xl">{"< " + transaction.passphrase + " >"}</p>
-        {!copied ? (
-          <CopyToClipboard text={transaction.passphrase}>
-            <button
-              onClick={() => {
-                setCopied(true);
-                setTimeout(() => {
-                  setCopied(false);
-                }, 2000);
-              }}
-            >
-              <img src={copy} alt="copy" className="w-8 h-8" />
+      <div className="flex-col space-y-2">
+        <p className="text-xl">
+          {" "}
+          <b>Passphrase</b>
+        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-primary font-bold text-2xl lg:text-3xl">{"" + transaction.passphrase + ""}</p>
+          {!copied ? (
+            <CopyToClipboard text={transaction.passphrase}>
+              <button
+                onClick={() => {
+                  setCopied(true);
+                  setTimeout(() => {
+                    setCopied(false);
+                  }, 2000);
+                }}
+              >
+                <img src={copy} alt="copy" className="w-8 h-8" />
+              </button>
+            </CopyToClipboard>
+          ) : (
+            <button>
+              <img src={checkmark} alt="checkmark" className="w-8 h-8" />
             </button>
-          </CopyToClipboard>
-        ) : (
-          <button>
-            <img src={checkmark} alt="checkmark" className="w-8 h-8" />
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="bg-gray-200 p-1">

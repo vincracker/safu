@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { gql, useQuery } from "@apollo/client";
 import { useWeb3React } from "@web3-react/core";
@@ -10,8 +10,9 @@ import keccak256 from "keccak256";
 
 import abi from "../../../abi/SaFuSend.json";
 import { UseAppContext } from "../../../App";
+import { tokenslist } from "../../../constants/tokenData";
 import { useContract } from "../../../hooks/useContract";
-import { contract_address } from "../../../utils/constant";
+import { contract_address, stableCoins, feeCollectCap } from "../../../utils/constant";
 import ReceiveModal from "./receivModal";
 
 window.Buffer = window.Buffer || Buffer;
@@ -40,6 +41,13 @@ type Order = {
   status: bigint;
 };
 
+type TokenType = {
+  name: string;
+  address: string;
+  symbol: string;
+  logoURI: string;
+};
+
 export default function Receive() {
   // const [passphrase, setPassphrase] = useState("");
   const { state, dispatch } = UseAppContext();
@@ -50,6 +58,14 @@ export default function Receive() {
   const [txHash, setTxHash] = useState("");
   const [modalIsOpen, setIsOpen] = useState(false);
   const chiron_contract: Contract | undefined = useContract(contract_address, abi);
+  const [feeRate, setFeeRate] = useState<number>(0);
+
+  const initialToken: TokenType = {
+    name: tokenslist[0].name,
+    address: tokenslist[0].address ? tokenslist[0].address : ethers.constants.AddressZero,
+    symbol: tokenslist[0].symbol,
+    logoURI: tokenslist[0].logoURI
+  };
 
   const { loading } = useQuery(GET_ORDERS_BY_PASSPHARSE, {
     onCompleted: (data) => {
@@ -75,7 +91,7 @@ export default function Receive() {
     initialValues: {
       passphrase: "",
       amount: 0,
-      token: ""
+      token: initialToken
     },
     onSubmit: (values) => {
       if (orders && account) {
@@ -85,8 +101,11 @@ export default function Receive() {
             order.passphrase === hashPP(values.passphrase) &&
             order.status.toString() === "0"
         )[0];
+        const token = tokenslist.filter(
+          (token) => token.address.toUpperCase() === claimOrder.tokenAddress.toUpperCase()
+        )[0];
         formik.setFieldValue("amount", ethers.utils.formatEther(claimOrder.amount));
-        formik.setFieldValue("token", "ETH");
+        formik.setFieldValue("token", token);
         setIsOpen(true);
       }
     },
@@ -114,6 +133,10 @@ export default function Receive() {
     return "0x" + keccak256(Buffer.from(pp)).toString("hex");
   };
 
+  const is_stable_coin = (address: string): boolean => {
+    return stableCoins.filter((token) => token.toUpperCase() == address.toUpperCase()).length > 0;
+  };
+
   const handleConfirm = async () => {
     try {
       await claimOrder(formik.values.passphrase);
@@ -132,7 +155,6 @@ export default function Receive() {
       const tx = await chiron_contract.claim_asset(passphrase_hash);
       await tx.wait();
       setTxHash(tx.hash);
-      reset();
     }
   };
 
@@ -141,6 +163,15 @@ export default function Receive() {
       type: "reset_received"
     });
   };
+
+  useEffect(() => {
+    if (chiron_contract) {
+      chiron_contract.fee_rate().then((res: any) => {
+        setFeeRate(+res);
+      });
+    }
+  }, []);
+
   return (
     <div className="w-full font-Lato">
       {!received ? (
@@ -198,7 +229,13 @@ export default function Receive() {
         setIsOpen={setIsOpen}
         handleConfirm={handleConfirm}
         amount={formik.values.amount}
-        token={formik.values.token}
+        token={formik.values.token.symbol}
+        fee={
+          is_stable_coin(formik.values.token.address) &&
+          formik.values.amount - (formik.values.amount * feeRate) / 10000 >= feeCollectCap
+            ? feeCollectCap
+            : formik.values.amount - formik.values.amount * feeRate
+        }
         resetForm={formik.resetForm}
       />
     </div>
