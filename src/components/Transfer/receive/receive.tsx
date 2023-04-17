@@ -166,7 +166,7 @@ export default function Receive() {
 
   useEffect(() => {
     if (chiron_contract) {
-      chiron_contract.fee_rate().then((res: any) => {
+      chiron_contract.transfer_fee_rate().then((res: any) => {
         setFeeRate(+res);
       });
     }

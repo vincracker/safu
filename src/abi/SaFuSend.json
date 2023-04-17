@@ -307,19 +307,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "fee_rate",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -384,7 +371,12 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_fee_rate",
+        "name": "_transfer_fee_rate",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_swap_fee_rate",
         "type": "uint16"
       },
       {
@@ -525,7 +517,12 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_new_fee_rate",
+        "name": "_new_transfer_fee_rate",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_new_swap_fee_rate",
         "type": "uint16"
       }
     ],
@@ -580,6 +577,32 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "swap_fee_rate",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "transfer_fee_rate",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
       }
     ],
     "stateMutability": "view",

@@ -330,7 +330,7 @@ const Send = () => {
 
   useEffect(() => {
     if (chiron_contract) {
-      chiron_contract.fee_rate().then((res: any) => {
+      chiron_contract.swap_fee_rate().then((res: any) => {
         setFeeRate(+res);
       });
     }
