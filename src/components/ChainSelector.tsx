@@ -55,11 +55,11 @@ function ChainSelector() {
 
   const items: MenuProps["items"] = [
     { label: "Ethereum", key: "1", icon: labelToShow(ethereum_Logo, "Ethereum_logo") },
-    { label: "Goerli Testnet", key: "5", icon: labelToShow(ethereum_Logo, "Ethereum_logo") },
-    { label: "Polygon", key: "137", icon: labelToShow(polygon_logo, "Polygon_logo") },
-    { label: "Mumbai", key: "80001", icon: labelToShow(polygon_logo, "Polygon_logo") },
-    { label: "BNB Chain", key: "56", icon: labelToShow(bsc_Logo, "BNB_logo") },
-    { label: "BNB Testnet", key: "97", icon: labelToShow(bsc_Logo, "BNB_logo") }
+    { label: "Goerli Testnet", key: "5", icon: labelToShow(ethereum_Logo, "Ethereum_logo") }
+    // { label: "Polygon", key: "137", icon: labelToShow(polygon_logo, "Polygon_logo") },
+    // { label: "Mumbai", key: "80001", icon: labelToShow(polygon_logo, "Polygon_logo") },
+    // { label: "BNB Chain", key: "56", icon: labelToShow(bsc_Logo, "BNB_logo") },
+    // { label: "BNB Testnet", key: "97", icon: labelToShow(bsc_Logo, "BNB_logo") }
   ];
 
   useEffect(() => {

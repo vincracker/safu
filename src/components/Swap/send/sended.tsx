@@ -8,6 +8,7 @@ import { UseAppContext } from "../../../App";
 import checkmark from "../../../assets/images/checkmark.svg";
 import copy from "../../../assets/images/copy.svg";
 import { CHAINS } from "../../../constants/networks";
+import { etherscan } from "../../../utils/constant";
 
 type TransactionType = {
   txHash: string;
@@ -36,7 +37,7 @@ export default function Sended({ transaction }: PropsType) {
         <p>
           TxHash:{" "}
           <a
-            href={"https://goerli.etherscan.io/tx/" + transaction.txHash}
+            href={etherscan + "tx/" + transaction.txHash}
             target="_blank"
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
           >

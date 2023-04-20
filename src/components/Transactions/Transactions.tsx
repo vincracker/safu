@@ -876,7 +876,7 @@ export default function Transactions() {
                           </div>
                           <div className="space-y-2">
                             <div className="flex flex-col items-center gap-x-2">
-                              <a href={"https://goerli.etherscan.io/tx/" + order.receiverHash} target="_blank">
+                              <a href={etherscan + "tx/" + order.receiverHash} target="_blank">
                                 <img src={link} alt="link" className="w-6 h-6" />
                               </a>
                             </div>
@@ -950,7 +950,7 @@ export default function Transactions() {
                             <div className="space-y-2 text-end">
                               <div className="flex flex-col items-center gap-x-2">
                                 {/* <p>{order.senderHash.slice(0, 10)}...</p> */}
-                                <a href={"https://goerli.etherscan.io/tx/" + order.receiverHash} target="_blank">
+                                <a href={etherscan + "tx/" + order.receiverHash} target="_blank">
                                   <img src={link} alt="link" className="w-6 h-6" />
                                 </a>
                               </div>
@@ -1481,7 +1481,7 @@ const ClaimModal = ({ order, cancelClaim, handleClaimSucceed }: PropsType) => {
               <p>
                 TxHash:{" "}
                 <a
-                  href={"https://goerli.etherscan.io/tx/" + txHash}
+                  href={etherscan + "tx/" + txHash}
                   target="_blank"
                   className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
                 >
