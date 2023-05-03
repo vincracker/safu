@@ -1224,9 +1224,17 @@ const ClaimModal = ({ order, cancelClaim, handleClaimSucceed }: PropsType) => {
 
   useEffect(() => {
     if (chiron_contract) {
-      chiron_contract.fee_rate().then((res: number) => {
-        setFeeRate(res);
-      });
+      if (location.pathname == "/app") {
+        chiron_contract.transfer_fee_rate().then((res: number) => {
+          setFeeRate(res);
+        });
+      }
+
+      if (location.pathname == "/app/otc") {
+        chiron_contract.swap_fee_rate().then((res: number) => {
+          setFeeRate(res);
+        });
+      }
     }
   }, [chiron_contract]);
 

@@ -36,6 +36,7 @@ export default function Sended({ transaction }: PropsType) {
           <a
             href={etherscan + transaction.txHash}
             className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+            target="_blank"
           >
             {transaction.txHash.slice(0, 30)}.....
           </a>
